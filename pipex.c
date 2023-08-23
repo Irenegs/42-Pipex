@@ -1,4 +1,39 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipex.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/23 19:00:05 by irgonzal          #+#    #+#             */
+/*   Updated: 2023/08/23 19:28:23 by irgonzal         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 # include "pipex.h"
+
+char *command_exists(char *s)
+{
+    char    *route;
+    char    *path[] = {"/usr/local/bin/", "/usr/bin/", "/bin/", "/usr/sbin/", "/sbin/", "/usr/local/share/dotnet/", "/usr/local/munki/", "~/.dotnet/tools/", "/Library/Frameworks/Mono.framework/Versions/Current/Commands/"};
+    int     i;
+
+    i = 0;
+    while (i < 7)
+    {
+        route = ft_strjoin(path[i], s);
+        if (!route)
+            return (NULL);
+        //printf("route:[%s]\n", route);
+        if (access(route, F_OK) == 0 && access(route, X_OK) == 0)
+        {
+            return (route);
+        }
+        free(route);
+        i++;
+    }
+    return (NULL);
+}
 
 int validation_input(int argc, char **argv)
 {
@@ -8,9 +43,8 @@ int validation_input(int argc, char **argv)
         {
             if (access(argv[4], W_OK) == 0)
             {
-                //printf("hi\n");
-                //if (access(argv[2], X_OK) == 0 && access(argv[3], X_OK) == 0)
-                return (0);
+                if (command_exists(argv[2]) != NULL && command_exists(argv[3]) != NULL)
+                    return (0);
             }
         }
     }
@@ -24,14 +58,25 @@ int main(int argc, char **argv)
     pid_t   childpid;
     char    string[] = "Hello, world!\n";
     char    readbuffer[80];*/
-    char    *argumentos[] = {"/usr/bin/ls", "-l", "pipex.h", NULL};
+    char    *argumentos[] = {"/usr/bin/ls", "-l", argv[1], NULL};
     /*int     input_fd;
     int     output_fd;*/
+    char    **command_1;
+    char    *c;
 
+    /*
     if (validation_input(argc, argv) != 0)
-        exit (1);
+        exit (1);*/
+    if (argc == 1)
+        exit(0);
+    c = ft_strjoin(argv[1], argv[2]);
     printf("Todo chachi\n");
-    if (execve("/usr/bin/wc", argumentos, NULL) == -1)
+    command_1 = ft_split(c, ' ');
+    free(c);
+    printf("comando:[%s]\n", command_1[0]);
+    printf("ruta:[%s]\n", command_exists(command_1[1]));
+    printf("argumentos:[%s]\n", command_1[2]);
+    if (execve(command_exists(command_1[1]), argumentos, NULL) == -1)
         perror("execve");
     exit (0);
     /*
