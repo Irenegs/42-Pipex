@@ -1,0 +1,6 @@
+[hi2]
+comando:[wc]
+ruta:[/usr/bin/wc]
+arguments_2: wc, -l
+childpid 5: 15712
+3

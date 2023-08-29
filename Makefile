@@ -47,7 +47,7 @@ LDLIBS      := $(addprefix -l,$(LIBS))
 # MAKEFLAGS make flags
 
 RM          := rm -f
-MAKEFLAGS   += --no-print-directory -nostartfiles
+MAKEFLAGS   += --no-print-directory
 
 #------------------------------------------------#
 #   RECIPES                                      #
