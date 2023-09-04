@@ -27,7 +27,7 @@ LIBS_TARGET := libft/libft.a
 INCS        := include    \
     libft/include
 
-SRCS        := pipex.c
+SRCS        := pipex-ultimate.c validation.c
 
 OBJS        := $(SRCS:%.c=%.o)
 #DEPS        := $(OBJS:.o=.d)
@@ -92,4 +92,4 @@ re:
 #------------------------------------------------#
 
 .PHONY: clean fclean re
-#.SILENT:
+.SILENT:
