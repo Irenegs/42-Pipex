@@ -3,55 +3,97 @@
 /*                                                        :::      ::::::::   */
 /*   validation.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: irgonzal <irgonzal@student.42madrid.com    +#+  +:+       +#+        */
+/*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/30 17:36:54 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/09/02 18:58:43 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/09/10 12:12:56 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "pipex.h"
 
-static char    *get_path(int i)
+static void free_list(char **arr)
 {
-    char    *path[10];
+	int	i;
 
-    path[0] = "/usr/local/bin/";
-    path[1] = "/usr/bin/";
-    path[2] = "/bin/";
-    path[3] = "/usr/sbin/";
-    path[4] = "/sbin/";
-    path[5] = "/usr/local/share/dotnet/";
-    path[6] = "/usr/local/munki/";
-    path[7] =  "~/.dotnet/tools/"; 
-    path[8] = "/Library/Frameworks/Mono.framework/Versions/Current/Commands/";
-    path[9] = NULL;
-    return (path[i]);
+	i = 0;
+	while (arr[i])
+	{
+		free(arr[i]);
+		i++;
+	}
+	free(arr);
 }
 
-char    *command_exists(char *s)
+static int select_variable(char **envp)
+{
+    int     i;
+    char    **var;
+
+    i = 0;
+    while (envp[i])
+    {
+        var = ft_super_split(envp[i], "=:");
+        if (ft_strncmp(var[0], "PATH", 4) == 0)
+        {
+            free_list(var);
+            return (i);
+        }
+        free_list(var);
+        i++;
+    }
+    free_list(var);
+    return (-1);
+}
+
+char    *get_path(char *s, int i, char **envp)
+{
+    char    **path;
+    char    *route;
+    char    *folder;
+
+    //printf("PATH:%s\n", envp[2]);
+    route = NULL;
+    path = ft_super_split(envp[select_variable(envp)], "=:");
+    //printf("path i:[%s]\n", path[i]);
+    if (path[i])
+    {
+        folder = ft_strjoin(path[i], "/");
+        route = ft_strjoin(folder, s);
+        free(folder);
+    }
+    //printf("get path\n");
+    free_list(path);
+    //printf("after free\n");
+    return (route);
+}
+
+int command_exists(char *s, char **envp)
 {
     char    *route;
     int     i;
 
     if (s)
     {
-        i = 0;
-        while (i < 7)
+        //printf("command exists\n");
+        i = 1;
+        while ((route = get_path(s, i, envp)) != NULL)
         {
-            route = ft_strjoin(get_path(i), s);
-            if (!route)
-                return (NULL);
+            //printf("i:[%d-%s]\n", i, route);
             if (access(route, F_OK) == 0 && access(route, X_OK) == 0)
-                return (route);
+            {
+                free(route);
+                //printf("ret i:[%d]\n", i);
+                return (i);
+            }
             free(route);
             i++;
         }
     }
-    return (NULL);
+    return (-1);
 }
 
-int validation_files(int argc, char **argv)
+static int validation_files(int argc, char **argv)
 {
     if (argc == 5)
     {
@@ -64,16 +106,32 @@ int validation_files(int argc, char **argv)
     return (1);
 }
 
-int validation(int argc, char **argv, char *c1[3], char *c2[3])
+int validation(int argc, char **argv, char **envp)
 {
-    if (validation_files(argc, argv) == 0)
+    char    **c1;
+    char    **c2;
+
+    c1 = ft_split(argv[2], ' ');
+    c2 = ft_split(argv[3], ' ');
+    if (c1 && c2)
     {
-        if (c1 && command_exists(c1[0]))
+        if (argc == 5 && validation_files(argc, argv) == 0)
         {
-            if (c2 && command_exists(c2[0]))
+            //printf("files ok\n");
+            if (c1 && command_exists(c1[0], envp) != -1)
+            {
+                //printf("c1 ok\n");
+                if (c2 && command_exists(c2[0], envp) != -1)
+                {
+                    free_list(c1);
+                    free_list(c2);
                     return (0);
+                }
+            }
         }
     }
-    perror("Error");
+    free_list(c1);
+    free_list(c2);
+    perror("Error 1");
     return (1);
 }

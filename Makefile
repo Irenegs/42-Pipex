@@ -27,13 +27,13 @@ LIBS_TARGET := libft/libft.a
 INCS        := include    \
     libft/include
 
-SRCS        := pipex-ultimate.c validation.c
+SRCS        := pipex.c validation.c utils.c
 
 OBJS        := $(SRCS:%.c=%.o)
 #DEPS        := $(OBJS:.o=.d)
 
-CC          := gcc
-CFLAGS      := -Wall -Wextra -Werror
+CC          := gcc -g3 -fsanitize=address
+CFLAGS      := -Wall -Wextra -Werror -g3 -fsanitize=address
 CPPFLAGS    := $(addprefix -I,$(INCS))
 #-MMD -MP
 LDFLAGS     := $(addprefix -L,$(dir $(LIBS_TARGET)))
