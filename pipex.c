@@ -6,7 +6,7 @@
 /*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 19:20:34 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/09/10 12:26:40 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/09/10 13:52:52 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,19 +25,19 @@ static int run_first_command(char **argv, char **envp)
     char    **command;
 
     command = ft_split(argv[2], ' ');
-    //printf("1:[%s]\n", command[0]);
+    if (!command)
+        return (-1);
     return (execve(get_path(command[0], command_exists(command[0], envp), envp), command, envp) == -1);
 }
 
 static int run_second_command(char **argv, char **envp)
 {
     char    **command;
-    char    *route;
 
     command = ft_split(argv[3], ' ');
-    route = get_path(command[0], command_exists(command[0], envp), envp);
-    //printf("Ruta [%s]\n", route);
-    return (execve(route, command, envp) == -1);
+    if (!command)
+        return (-1);
+    return (execve(get_path(command[0], command_exists(command[0], envp), envp), command, envp) == -1);
 }
 
 static int child_proccess(char **argv, char **envp)
@@ -59,20 +59,34 @@ static int child_proccess(char **argv, char **envp)
         close(fd[1]);
         dup2(fd[0], STDIN_FILENO);
         aux_fd = open(argv[4], O_WRONLY | O_TRUNC);
+        if (aux_fd < 0)
+        {
+            perror("Error");
+            exit(1);
+        }
         //printf("hola comando 2 %s\n", command_2[0]);
         dup2(aux_fd, STDOUT_FILENO);
         if (run_second_command(argv, envp) == -1)
             perror("exec2");
+        close(aux_fd);
+        exit (0);
     }
     else
     {
         close(fd[0]);
         aux_fd = open(argv[1],O_RDONLY);
+        if (aux_fd < 0)
+        {
+            perror("Error");
+            exit(1);
+        }
         dup2(aux_fd, STDIN_FILENO);
         //printf("childpid 1\n");
         dup2(fd[1], STDOUT_FILENO);
         if (run_first_command(argv, envp) == -1)
             perror("exec1");
+        close(aux_fd);
+        exit (0);
     }
     return (0);
 }

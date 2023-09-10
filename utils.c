@@ -6,13 +6,13 @@
 /*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/06 19:51:55 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/09/10 10:47:33 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/09/10 13:55:33 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "pipex.h"
 
-static int ft_is_separator(char c, char *sep)
+static int isseparator(char c, char *sep)
 {
     int i;
 
@@ -24,7 +24,6 @@ static int ft_is_separator(char c, char *sep)
         if (sep[i] != '\0')
             return (i);
     }
-    //printf("No separator %c\n", c);
     return (-1);
 }
 
@@ -39,7 +38,7 @@ static int	ft_wc(char const *s, char *sep)
 	words = 0;
 	while (s[i] != '\0')
 	{
-		if (ft_is_separator(s[i], sep) == -1 && (i == 0 || ft_is_separator(s[i - 1], sep) != -1))
+		if (isseparator(s[i], sep) == -1 && (i == 0 || isseparator(s[i - 1], sep) != -1))
 			words += 1;
 		i++;
 	}
@@ -51,12 +50,8 @@ static size_t	ft_len_next(char const *s, size_t pos, char *sep)
 	size_t	i;
 
 	i = 0;
-	while (ft_is_separator(s[pos + i], sep) == -1 && s[pos + i] != '\0')
-    {
-        //printf("i, c, pos + i %zu %c %zu\n", i , s[pos + i], pos + i);
+	while (isseparator(s[pos + i], sep) == -1 && s[pos + i] != '\0')
 		i++;
-    }
-    //printf("len next %zu %c\n", i, s[pos + i]);
 	return (i);
 }
 
@@ -88,11 +83,9 @@ char	**ft_super_split(char const *s, char *sep)
 	pos = 0;
 	while (++i < ft_wc(s, sep))
 	{
-        //printf("pos a %zu\n", pos);
-		while (ft_is_separator(s[pos], sep) != -1)
+        while (isseparator(s[pos], sep) != -1)
 			pos++;
-        //printf("pos b %zu\n", pos);
-		len = ft_len_next(s, pos, sep);
+        len = ft_len_next(s, pos, sep);
 		arr[i] = malloc((len + 1) * sizeof(char));
 		if (!arr[i])
 			return (ft_out(arr, i));

@@ -6,7 +6,7 @@
 /*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/30 17:36:54 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/09/10 12:12:56 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/09/10 13:52:29 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ static int select_variable(char **envp)
     while (envp[i])
     {
         var = ft_super_split(envp[i], "=:");
+        if (!var)
+            return (-1);
         if (ft_strncmp(var[0], "PATH", 4) == 0)
         {
             free_list(var);
@@ -54,17 +56,24 @@ char    *get_path(char *s, int i, char **envp)
 
     //printf("PATH:%s\n", envp[2]);
     route = NULL;
-    path = ft_super_split(envp[select_variable(envp)], "=:");
-    //printf("path i:[%s]\n", path[i]);
-    if (path[i])
+    if (s && select_variable(envp) != -1)
     {
-        folder = ft_strjoin(path[i], "/");
-        route = ft_strjoin(folder, s);
-        free(folder);
+        path = ft_super_split(envp[select_variable(envp)], "=:");
+        if (!path)
+            return (NULL);
+        if (path[i])
+        {
+            folder = ft_strjoin(path[i], "/");
+            if (folder)
+            {
+                route = ft_strjoin(folder, s);
+                free(folder);
+            }
+        }
+        //printf("get path\n");
+        free_list(path);
+        //printf("after free\n");
     }
-    //printf("get path\n");
-    free_list(path);
-    //printf("after free\n");
     return (route);
 }
 
@@ -77,7 +86,8 @@ int command_exists(char *s, char **envp)
     {
         //printf("command exists\n");
         i = 1;
-        while ((route = get_path(s, i, envp)) != NULL)
+        route = get_path(s, i, envp);
+        while (route != NULL)
         {
             //printf("i:[%d-%s]\n", i, route);
             if (access(route, F_OK) == 0 && access(route, X_OK) == 0)
@@ -88,6 +98,7 @@ int command_exists(char *s, char **envp)
             }
             free(route);
             i++;
+            route = get_path(s, i, envp);
         }
     }
     return (-1);
