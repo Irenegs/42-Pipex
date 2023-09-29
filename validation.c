@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   validation.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: irgonzal <irgonzal@student.42madrid.com    +#+  +:+       +#+        */
+/*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/30 17:36:54 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/09/10 22:43:43 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/09/29 17:33:22 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ char    *get_path(char *s, int i, char **envp)
     char    *route;
     char    *folder;
 
+    //printf("PATH:%s\n", envp[2]);
     route = NULL;
     if (s && select_variable(envp) != -1)
     {
@@ -69,7 +70,9 @@ char    *get_path(char *s, int i, char **envp)
                 free(folder);
             }
         }
+        //printf("get path\n");
         free_list(path);
+        //printf("after free\n");
     }
     return (route);
 }
@@ -81,13 +84,16 @@ int command_exists(char *s, char **envp)
 
     if (s)
     {
+        //printf("command exists\n");
         i = 1;
         route = get_path(s, i, envp);
         while (route != NULL)
         {
+            //printf("i:[%d-%s]\n", i, route);
             if (access(route, F_OK) == 0 && access(route, X_OK) == 0)
             {
                 free(route);
+                //printf("ret i:[%d]\n", i);
                 return (i);
             }
             free(route);
@@ -122,8 +128,10 @@ int validation(int argc, char **argv, char **envp)
     {
         if (argc == 5 && validation_files(argc, argv) == 0)
         {
+            //printf("files ok\n");
             if (c1 && command_exists(c1[0], envp) != -1)
             {
+                //printf("c1 ok\n");
                 if (c2 && command_exists(c2[0], envp) != -1)
                 {
                     free_list(c1);
