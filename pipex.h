@@ -6,7 +6,7 @@
 /*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/29 18:53:11 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/09/10 09:13:50 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/10/01 17:43:15 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,4 +25,5 @@ int    get_command(char *s, char *arr[3], char **envp);
 int validation(int argc, char **argv, char **envp);
 char    *get_path(char *s, int i, char **envp);
 char	**ft_super_split(char const *s, char *sep);
+char	**ft_out(char **arr, int i);
 #endif

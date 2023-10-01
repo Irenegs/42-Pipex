@@ -6,7 +6,7 @@
 /*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/06 19:51:55 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/09/29 17:45:40 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/10/01 17:43:39 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,12 +67,12 @@ static size_t	ft_len_next(char const *s, size_t pos, char *sep)
 	return (i);
 }
 
-static	char	**ft_out(char **arr, int i)
+char	**ft_out(char **arr, int i)
 {
 	int	j;
 
 	j = 0;
-	while (j <= i)
+	while (j <= i && arr[j])
 	{
 		free(arr[j]);
 		j++;

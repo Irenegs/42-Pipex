@@ -6,7 +6,7 @@
 /*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 19:20:34 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/09/29 19:25:07 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/10/01 18:56:03 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static int run_first_command(char **argv, char **envp)
 {
     char    **command;
 
-    printf("comando 1\n");
+    //printf("comando 1\n");
     command = ft_super_split(argv[2], " ");
     if (!command)
         return (-1);
@@ -68,7 +68,7 @@ static int child_proccess(char **argv, char **envp)
         ///printf("2 hijo\n");
         close(fd[1]);
         dup2(fd[0], STDIN_FILENO);
-        aux_fd = open(argv[4], O_WRONLY | O_TRUNC);
+        aux_fd = open(argv[4], O_WRONLY | O_TRUNC | O_CREAT, 644);
         if (aux_fd < 0)
         {
             perror("Error");
@@ -128,7 +128,7 @@ int main(int argc, char **argv, char **envp)
     }*/
     //exit(0);
     if (validation(argc, argv, envp) != 0)
-        return (1);
+        exit (1);
     childpid = fork();
     //printf("antes %d\n", childpid);
     if(childpid == -1)
