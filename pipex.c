@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
+/*   By: irgonzal <irgonzal@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 19:20:34 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/10/01 18:56:03 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/10/03 18:56:33 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ static int child_proccess(char **argv, char **envp)
         ///printf("2 hijo\n");
         close(fd[1]);
         dup2(fd[0], STDIN_FILENO);
-        aux_fd = open(argv[4], O_WRONLY | O_TRUNC | O_CREAT, 644);
+        aux_fd = open(argv[4], O_WRONLY | O_TRUNC | O_CREAT, 00644);
         if (aux_fd < 0)
         {
             perror("Error");

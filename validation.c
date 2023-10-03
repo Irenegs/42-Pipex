@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   validation.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
+/*   By: irgonzal <irgonzal@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/30 17:36:54 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/10/01 18:42:50 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/10/03 18:43:36 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,12 @@ int is_local(char *s)
     if (s)
     {
         if (ft_strncmp(s, "./", 2) == 0 || ft_strncmp(s, "/", 1) == 0 || ft_strncmp(s, "../", 3) == 0)
-            return (0);
+        {
+            if (access(s, F_OK) == 0 && access(s, X_OK) == 0)
+                return (0);
+            else
+                return (-1);
+        }
     }
     return (1);
 }
@@ -49,13 +54,14 @@ static int select_variable(char **envp)
             return (-1);
         if (ft_strncmp(var[0], "PATH", 4) == 0)
         {
-            ft_out(var,100);
+            ft_out(var,1000);
             return (i);
         }
-        ft_out(var,100);
+        ft_out(var,1000);
         i++;
     }
-    //ft_out(var,100);//se puede borrar?
+    //printf("var %d\n", i);
+    ft_out(var,1000);//se puede borrar?
     return (-1);
 }
 
@@ -99,8 +105,8 @@ int command_exists(char *s, char **envp)
     if (s)
     {
         //printf("command exists\n");
-        if (is_local(s) == 0 && access(s, F_OK) == 0 && access(s, X_OK) == 0)
-            return (0);
+        if (is_local(s) < 1)
+            return (is_local(s));
         i = 1;
         route = get_path(s, i, envp);
         while (route != NULL)
@@ -150,15 +156,19 @@ int validation(int argc, char **argv, char **envp)
                 //printf("c1 ok\n");
                 if (c2 && command_exists(c2[0], envp) != -1)
                 {
-                    ft_out(c1, 100);
-                    ft_out(c2, 100);
+                    if (c1)
+                        ft_out(c1, 1000);
+                    if (c1)
+                        ft_out(c2, 1000);
                     return (0);
                 }
             }
         }
     }
-    ft_out(c1, 100);
-    //ft_out(c2, 100);
+    if (c1)
+        ft_out(c1, 1000);
+    if (c2)
+        ft_out(c2, 1000);
     perror("Error 1");
     return (1);
 }

@@ -27,7 +27,7 @@ LIBS_TARGET := libft/libft.a
 INCS        := include    \
     libft/include
 
-SRCS        := pipex.c validation.c utils.c
+SRCS        := prueba_split.c validation.c utils.c
 
 OBJS        := $(SRCS:%.c=%.o)
 #DEPS        := $(OBJS:.o=.d)
