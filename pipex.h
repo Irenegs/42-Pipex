@@ -6,7 +6,7 @@
 /*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/29 18:53:11 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/10/01 17:43:15 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/10/10 18:27:06 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,14 @@
 # include <sys/wait.h>
 # include <limits.h>
 
-int command_exists(char *s, char **envp);
+extern char **environ;
+extern char *shell;
+
+int command_exists(char *s);
 //int validation_files(int argc, char **argv);
-int    get_command(char *s, char *arr[3], char **envp);
-int validation(int argc, char **argv, char **envp);
-char    *get_path(char *s, int i, char **envp);
+int    get_command(char *s, char *arr[3]);
+int validation(int argc, char **argv);
+char    *get_path(char *s, int i);
 char	**ft_super_split(char const *s, char *sep);
 char	**ft_out(char **arr, int i);
 #endif

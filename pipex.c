@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: irgonzal <irgonzal@student.42madrid.com    +#+  +:+       +#+        */
+/*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 19:20:34 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/10/03 18:56:33 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/10/10 18:45:30 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static void    ft_leaks(void)
 }
 */
 
-static int run_first_command(char **argv, char **envp)
+static int run_first_command(char **argv)
 {
     char    **command;
 
@@ -28,10 +28,10 @@ static int run_first_command(char **argv, char **envp)
     command = ft_super_split(argv[2], " ");
     if (!command)
         return (-1);
-    return (execve(get_path(command[0], command_exists(command[0], envp), envp), command, envp) == -1);
+    return (execve(get_path(command[0], command_exists(command[0])), command, environ) == -1);
 }
 
-static int run_second_command(char **argv, char **envp)
+static int run_second_command(char **argv)
 {
     char    **command;
 
@@ -47,10 +47,10 @@ static int run_second_command(char **argv, char **envp)
     if (!command)
         return (-1);
     //printf("holaaaa\n");
-    return (execve(get_path(command[0], command_exists(command[0], envp), envp), command, envp) == -1);
+    return (execve(get_path(command[0], command_exists(command[0])), command, environ) == -1);
 }
 
-static int child_proccess(char **argv, char **envp)
+static int child_proccess(char **argv)
 {
     int     fd[2];
     pid_t   childpid;
@@ -68,7 +68,7 @@ static int child_proccess(char **argv, char **envp)
         ///printf("2 hijo\n");
         close(fd[1]);
         dup2(fd[0], STDIN_FILENO);
-        aux_fd = open(argv[4], O_WRONLY | O_TRUNC | O_CREAT, 00644);
+        aux_fd = open(argv[4], O_WRONLY | O_TRUNC | O_CREAT, 0644);
         if (aux_fd < 0)
         {
             perror("Error");
@@ -76,7 +76,7 @@ static int child_proccess(char **argv, char **envp)
         }
         //printf("hola comando 2\n");
         dup2(aux_fd, STDOUT_FILENO);
-        if (run_second_command(argv, envp) == -1)
+        if (run_second_command(argv) == -1)
             perror("exec2");
         close(aux_fd);
         exit (0);
@@ -93,7 +93,7 @@ static int child_proccess(char **argv, char **envp)
         dup2(aux_fd, STDIN_FILENO);
         //printf("childpid 1\n");
         dup2(fd[1], STDOUT_FILENO);
-        if (run_first_command(argv, envp) == -1)
+        if (run_first_command(argv) == -1)
             perror("exec1");
         close(aux_fd);
         exit (0);
@@ -101,13 +101,13 @@ static int child_proccess(char **argv, char **envp)
     return (0);
 }
 
-int main(int argc, char **argv, char **envp)
+int main(int argc, char **argv)
 {
     pid_t   childpid;
     //char    *arg[]={"/bin/echo", "$PATH", NULL};
 
     //atexit(ft_leaks);
-    /*if (execve("/bin/echo", arg, envp) == -1)
+    /*if (execve("/bin/echo", arg) == -1)
         perror("exec");*/
     /*int i = 0;
     while (i < argc)
@@ -127,7 +127,7 @@ int main(int argc, char **argv, char **envp)
         i++;
     }*/
     //exit(0);
-    if (validation(argc, argv, envp) != 0)
+    if (validation(argc, argv) != 0)
         exit (1);
     childpid = fork();
     //printf("antes %d\n", childpid);
@@ -138,7 +138,7 @@ int main(int argc, char **argv, char **envp)
     }
     if(childpid == 0)
     {
-        if (child_proccess(argv, envp) == -1)
+        if (child_proccess(argv) == -1)
             exit(1);
     }
     if (waitpid(-1, &childpid, WIFEXITED(childpid)) != -1)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   validation.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: irgonzal <irgonzal@student.42madrid.com    +#+  +:+       +#+        */
+/*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/30 17:36:54 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/10/03 18:43:36 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/10/10 20:07:51 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,56 +28,54 @@ static void free_list(char **arr)
 
 int is_local(char *s)
 {
+    int i;
+
+    i = 0;
     if (s)
     {
-        if (ft_strncmp(s, "./", 2) == 0 || ft_strncmp(s, "/", 1) == 0 || ft_strncmp(s, "../", 3) == 0)
-        {
-            if (access(s, F_OK) == 0 && access(s, X_OK) == 0)
-                return (0);
-            else
-                return (-1);
-        }
+        if (s[i] == '/')
+            return (0);
+        i++;
     }
     return (1);
 }
 
-static int select_variable(char **envp)
+static int select_variable(char **environ)
 {
     int     i;
     char    **var;
 
     i = 0;
-    while (envp[i])
+    while (environ[i])
     {
-        var = ft_super_split(envp[i], "=:");
+        var = ft_super_split(environ[i], "=:");
         if (!var)
             return (-1);
         if (ft_strncmp(var[0], "PATH", 4) == 0)
         {
-            ft_out(var,1000);
+            ft_out(var,100);
             return (i);
         }
-        ft_out(var,1000);
+        ft_out(var,100);
         i++;
     }
-    //printf("var %d\n", i);
-    ft_out(var,1000);//se puede borrar?
+    //ft_out(var,100);//se puede borrar?
     return (-1);
 }
 
-char    *get_path(char *s, int i, char **envp)
+char    *get_path(char *s, int i)
 {
     char    **path;
     char    *route;
     char    *folder;
 
-    //printf("PATH:%s\n", envp[2]);
+    //printf("PATH:%s\n"[2]);
     if (s && is_local(s) == 0)
         return (s);
     route = NULL;
-    if (s && select_variable(envp) != -1)
+    if (s && select_variable(environ) != -1)
     {
-        path = ft_super_split(envp[select_variable(envp)], "=:");
+        path = ft_super_split(environ[select_variable(environ)], "=:");
         if (!path)
             return (NULL);
         if (path[i])
@@ -97,7 +95,7 @@ char    *get_path(char *s, int i, char **envp)
 }
 
 
-int command_exists(char *s, char **envp)
+int command_exists(char *s)
 {
     char    *route;
     int     i;
@@ -105,10 +103,10 @@ int command_exists(char *s, char **envp)
     if (s)
     {
         //printf("command exists\n");
-        if (is_local(s) < 1)
-            return (is_local(s));
+        if (is_local(s) == 0 && access(s, F_OK) == 0 && access(s, X_OK) == 0)
+            return (0);
         i = 1;
-        route = get_path(s, i, envp);
+        route = get_path(s, i);
         while (route != NULL)
         {
             //printf("i:[%d-%s]\n", i, route);
@@ -120,7 +118,7 @@ int command_exists(char *s, char **envp)
             }
             free(route);
             i++;
-            route = get_path(s, i, envp);
+            route = get_path(s, i);
         }
     }
     return (-1);
@@ -139,36 +137,33 @@ static int validation_files(int argc, char **argv)
     return (1);
 }
 
-int validation(int argc, char **argv, char **envp)
+int validation(int argc, char **argv)
 {
     char    **c1;
     char    **c2;
 
-    c1 = ft_split(argv[2], ' ');
-    c2 = ft_split(argv[3], ' ');
-    if (c1 && c2)
+    //if (c1 && c2)
+    //{
+    if (argc == 5 && validation_files(argc, argv) == 0)
     {
-        if (argc == 5 && validation_files(argc, argv) == 0)
+        //printf("files ok\n");
+        c1 = ft_split(argv[2], ' ');
+        if (c1 && command_exists(c1[0]) != -1)
         {
-            //printf("files ok\n");
-            if (c1 && command_exists(c1[0], envp) != -1)
+            //printf("c1 ok\n");
+            c2 = ft_split(argv[3], ' ');
+            if (c2 && command_exists(c2[0]) != -1)
             {
-                //printf("c1 ok\n");
-                if (c2 && command_exists(c2[0], envp) != -1)
-                {
-                    if (c1)
-                        ft_out(c1, 1000);
-                    if (c1)
-                        ft_out(c2, 1000);
-                    return (0);
-                }
+                ft_out(c1, 100);
+                ft_out(c2, 100);
+                return (0);
             }
+            ft_out(c2, 100);
         }
+        ft_out(c1, 100);
     }
-    if (c1)
-        ft_out(c1, 1000);
-    if (c2)
-        ft_out(c2, 1000);
-    perror("Error 1");
+    //}
+    //write(2, perror(""), ft_strlen(strerror(perror(""))));
+    perror("");
     return (1);
 }
