@@ -6,7 +6,7 @@
 /*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 19:20:34 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/10/10 18:45:30 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/10/13 19:01:18 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,3 +144,11 @@ int main(int argc, char **argv)
     if (waitpid(-1, &childpid, WIFEXITED(childpid)) != -1)
         exit (0);
 }
+
+/*
+Cosas que arreglar:
+
+- notexist + wc -l sí ejecuta wc -l
+- gestionar redirigir los errores a stderr
+- norminette
+*/

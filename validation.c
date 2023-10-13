@@ -6,7 +6,7 @@
 /*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/30 17:36:54 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/10/10 20:07:51 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/10/13 18:43:00 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,13 @@ int is_local(char *s)
     i = 0;
     if (s)
     {
-        if (s[i] == '/')
-            return (0);
-        i++;
+        //printf("s: %s", s);
+        while (s[i] != '\0')
+        {
+            if (s[i] == '/')
+                return (0);
+            i++;
+        }
     }
     return (1);
 }
