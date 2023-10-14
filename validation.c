@@ -6,7 +6,7 @@
 /*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/30 17:36:54 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/10/13 18:43:00 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/10/14 12:53:02 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,6 +168,6 @@ int validation(int argc, char **argv)
     }
     //}
     //write(2, perror(""), ft_strlen(strerror(perror(""))));
-    perror("");
+    perror(NULL);
     return (1);
 }

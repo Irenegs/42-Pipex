@@ -6,7 +6,7 @@
 /*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 19:20:34 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/10/13 19:01:18 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/10/14 13:47:33 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,10 +59,7 @@ static int child_proccess(char **argv)
     pipe(fd);
     childpid = fork();
     if(childpid == -1)
-    {
-        perror("fork");
-        exit(1);
-    }
+        return (-1);
     if(childpid == 0)
     {
         ///printf("2 hijo\n");
@@ -70,16 +67,15 @@ static int child_proccess(char **argv)
         dup2(fd[0], STDIN_FILENO);
         aux_fd = open(argv[4], O_WRONLY | O_TRUNC | O_CREAT, 0644);
         if (aux_fd < 0)
-        {
-            perror("Error");
-            exit(1);
-        }
+            return (-1);
         //printf("hola comando 2\n");
         dup2(aux_fd, STDOUT_FILENO);
+        return (run_second_command(argv));
+        /*
         if (run_second_command(argv) == -1)
-            perror("exec2");
+            perror(NULL);
         close(aux_fd);
-        exit (0);
+        exit (0);*/
     }
     else
     {
@@ -87,14 +83,16 @@ static int child_proccess(char **argv)
         aux_fd = open(argv[1],O_RDONLY);
         if (aux_fd < 0)
         {
-            perror("Error");
+            perror(NULL);
             exit(1);
         }
         dup2(aux_fd, STDIN_FILENO);
         //printf("childpid 1\n");
         dup2(fd[1], STDOUT_FILENO);
+        //return (run_first_command(argv) == -1);
         if (run_first_command(argv) == -1)
-            perror("exec1");
+            perror("error 1");
+        printf("hola\n");
         close(aux_fd);
         exit (0);
     }
@@ -127,28 +125,39 @@ int main(int argc, char **argv)
         i++;
     }*/
     //exit(0);
-    if (validation(argc, argv) != 0)
+    if (argc != 5)//validation(argc, argv) != 0)
         exit (1);
     childpid = fork();
     //printf("antes %d\n", childpid);
     if(childpid == -1)
     {
-        perror("fork");
+        perror(NULL);
         exit(1);
     }
     if(childpid == 0)
     {
         if (child_proccess(argv) == -1)
+        {
+            perror(NULL);
+            printf("hay errores\n");
             exit(1);
+        }
     }
     if (waitpid(-1, &childpid, WIFEXITED(childpid)) != -1)
+    {
+        if (WIFSIGNALED(childpid) == 1)
+        {
+            printf("sig: %d\n", WIFSIGNALED(childpid));
+            perror(NULL);
+            exit(1);
+        }
         exit (0);
+    }
 }
 
 /*
 Cosas que arreglar:
 
-- notexist + wc -l sí ejecuta wc -l
-- gestionar redirigir los errores a stderr
+- comparar subjects y revisar la gestión de errores
 - norminette
 */

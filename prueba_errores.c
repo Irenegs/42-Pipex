@@ -4,15 +4,20 @@
 # include <sys/types.h>
 #include <errno.h>
  #include <signal.h>
-int main(int argc, char **argv)
+int main(void)//int argc, char **argv)
 {
-    
-    int i= 0;
-    while (i < 108)
-    {
-        psignal(i, NULL);
-        i++;
-    }
+    printf("Error de lectura\n");
+    open("z.txt", O_RDONLY);
+    perror(NULL);
+    printf("Error de lectura\n");
+    open("z.txt", O_RDONLY);
+    perror(NULL);
+    printf("Prueba de permisos de ejecución\n");
+    execve("./a.txt",NULL, environ);
+    perror(NULL);
+    printf("Prueba de no existencia del comando\n");
+    execve("asf",NULL, environ);
+    perror(NULL);
     exit(0);
     /*
     i=127;

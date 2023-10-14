@@ -6,7 +6,7 @@
 /*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 15:23:01 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/10/13 18:41:58 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/10/14 10:27:50 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,14 +189,15 @@ char	**ft_super_split(char const *s, char *sep)
 			pos++;
         }
         //printf("pos1 %d\n", pos);
-        //printf("c %c\n", s[pos]);
+        //printf("c %c %c\n", s[pos], s[pos +1]);
         len = len_next_word(s, sep, pos);
         //printf("len next: i=%d; l=%d; c=%c\n", i, len, s[pos]);
 		arr[i] = malloc((len + 1) * sizeof(char));
 		if (!arr[i])
 			return (ft_out(arr, i));
         //printf("pos %d\n", pos);
-		pos = pos + len + copy_return_nonprint(arr[i], s + pos, len);
+		pos = pos + len + copy_return_nonprint(arr[i], s + pos, len) + 1;
+        //printf("pos2 %d\n", pos);
 	}
 	arr[i] = NULL;
     //printf("saliendo %s\n", arr[1]);
