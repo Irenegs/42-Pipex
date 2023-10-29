@@ -6,7 +6,7 @@
 /*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 15:23:01 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/10/14 10:27:50 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/10/29 12:38:12 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 char	**ft_out(char **arr, int i)
 {
 	int	j;
-
+    printf("ft out: %d\n", i);
 	j = 0;
 	while (j <= i && arr[j])
 	{
@@ -78,10 +78,7 @@ int	ft_wc(char const *s, char *sep)
 	while (s[i] != '\0')
 	{
 		if (new_word(s, sep, i, quotes) == 1)
-        {
-            //printf("nw:%c\n", s[i]);
-			words += 1;
-        }
+        	words += 1;
         if (s[i] == '\'' && is_escaped(s, i) == 0)
             quotes = 1 - quotes;
 		i++;
@@ -94,12 +91,8 @@ int end_word(char const *s, char *sep, int i, int quotes)
     if (s && sep && s[i] != '\0')
     {
         if (quotes == 1 || is_separator(s[i], sep) == -1 || is_escaped(s, i) == 1)
-        {
-            //printf("nll:%c\n", s[i]);
             return (0);
-        }
     }
-    //printf("ll:%c\n", s[i]);
     return (1);
 }
 
@@ -125,15 +118,11 @@ int len_next_word(char const *s, char *sep, int pos)
     while (end_word(s, sep, pos + i, quotes) == 0)
     {
         if (ch_to_print(s, pos + i) == 1)
-        {
-            //printf("c:%c\n", s[pos + i]);
             len++;
-        }
         else if (s[pos + i] == '\'')
             quotes = 1 - quotes;
         i++;
     }
-    //printf("ew:%c\n", s[pos + i]);
     return(len);
 }
 
@@ -148,18 +137,13 @@ int copy_return_nonprint(char *dst, char const *s, int len)
     {
         while (i < len)
         {
-            //printf("eval %c\n", s[i+nonprintable]);
             if (ch_to_print(s, i + nonprintable) == 1)
             {
                 dst[i] = s[i + nonprintable];
-                //printf("copied %i: %c\n", i, dst[i]);
                 i++;
             }
             else
-            {
                 nonprintable++;
-                //printf("non %i: %c\n", i, s[i + nonprintable -1]);
-            }
         }
         dst[len] = '\0';
         return (nonprintable);
@@ -181,26 +165,15 @@ char	**ft_super_split(char const *s, char *sep)
 	pos = 0;
 	while (++i < ft_wc(s, sep))
 	{
-        //printf("wc: %d\n", ft_wc(s, sep));
-        //printf("pos01 %d\n", pos);
         while (new_word(s, sep, pos, 0) == 0)
-        {
-            //printf("s %c\n", s[pos]);
-			pos++;
-        }
-        //printf("pos1 %d\n", pos);
-        //printf("c %c %c\n", s[pos], s[pos +1]);
+    		pos++;
         len = len_next_word(s, sep, pos);
-        //printf("len next: i=%d; l=%d; c=%c\n", i, len, s[pos]);
-		arr[i] = malloc((len + 1) * sizeof(char));
+    	arr[i] = malloc((len + 1) * sizeof(char));
 		if (!arr[i])
 			return (ft_out(arr, i));
-        //printf("pos %d\n", pos);
-		pos = pos + len + copy_return_nonprint(arr[i], s + pos, len) + 1;
-        //printf("pos2 %d\n", pos);
-	}
+    	pos = pos + len + copy_return_nonprint(arr[i], s + pos, len) + 1;
+    }
 	arr[i] = NULL;
-    //printf("saliendo %s\n", arr[1]);
-	return (arr);
+    return (arr);
 }
 

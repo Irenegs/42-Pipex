@@ -6,25 +6,11 @@
 /*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/30 17:36:54 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/10/14 12:53:02 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/10/29 12:49:38 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "pipex.h"
-/*
-static void free_list(char **arr)
-{
-	int	i;
-
-	i = 0;
-	while (arr[i])
-	{
-		free(arr[i]);
-		i++;
-	}
-	free(arr);
-}
-*/
+#include "pipex.h"
 
 int is_local(char *s)
 {
@@ -33,7 +19,6 @@ int is_local(char *s)
     i = 0;
     if (s)
     {
-        //printf("s: %s", s);
         while (s[i] != '\0')
         {
             if (s[i] == '/')
@@ -46,8 +31,8 @@ int is_local(char *s)
 
 static int select_variable(char **environ)
 {
-    int     i;
-    char    **var;
+    int i;
+    char **var;
 
     i = 0;
     while (environ[i])
@@ -57,23 +42,21 @@ static int select_variable(char **environ)
             return (-1);
         if (ft_strncmp(var[0], "PATH", 4) == 0)
         {
-            ft_out(var,100);
+            ft_out(var, 100);
             return (i);
         }
-        ft_out(var,100);
+        ft_out(var, 100);
         i++;
     }
-    //ft_out(var,100);//se puede borrar?
     return (-1);
 }
 
-char    *get_path(char *s, int i)
+char *get_path(char *s, int i)
 {
-    char    **path;
-    char    *route;
-    char    *folder;
+    char **path;
+    char *route;
+    char *folder;
 
-    //printf("PATH:%s\n"[2]);
     if (s && is_local(s) == 0)
         return (s);
     route = NULL;
@@ -91,33 +74,28 @@ char    *get_path(char *s, int i)
                 free(folder);
             }
         }
-        //printf("get path\n");
         ft_out(path, 100);
-        //printf("after free\n");
     }
     return (route);
 }
 
-
 int command_exists(char *s)
 {
-    char    *route;
-    int     i;
+    char *route;
+    int i;
 
     if (s)
     {
-        //printf("command exists\n");
-        if (is_local(s) == 0 && access(s, F_OK) == 0 && access(s, X_OK) == 0)
+        if (is_local(s) == 0)// && access(s, F_OK) == 0 && access(s, X_OK) == 0)
             return (0);
         i = 1;
         route = get_path(s, i);
         while (route != NULL)
         {
-            //printf("i:[%d-%s]\n", i, route);
             if (access(route, F_OK) == 0 && access(route, X_OK) == 0)
             {
+                printf("2\n");
                 free(route);
-                //printf("ret i:[%d]\n", i);
                 return (i);
             }
             free(route);
@@ -127,7 +105,7 @@ int command_exists(char *s)
     }
     return (-1);
 }
-
+/*
 static int validation_files(int argc, char **argv)
 {
     if (argc == 5)
@@ -140,21 +118,18 @@ static int validation_files(int argc, char **argv)
     }
     return (1);
 }
-
+*/
+/*
 int validation(int argc, char **argv)
 {
-    char    **c1;
-    char    **c2;
+    char **c1;
+    char **c2;
 
-    //if (c1 && c2)
-    //{
     if (argc == 5 && validation_files(argc, argv) == 0)
     {
-        //printf("files ok\n");
         c1 = ft_split(argv[2], ' ');
         if (c1 && command_exists(c1[0]) != -1)
         {
-            //printf("c1 ok\n");
             c2 = ft_split(argv[3], ' ');
             if (c2 && command_exists(c2[0]) != -1)
             {
@@ -166,8 +141,7 @@ int validation(int argc, char **argv)
         }
         ft_out(c1, 100);
     }
-    //}
-    //write(2, perror(""), ft_strlen(strerror(perror(""))));
     perror(NULL);
     return (1);
 }
+*/

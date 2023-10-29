@@ -27,13 +27,13 @@ LIBS_TARGET := libft/libft.a
 INCS        := include    \
     libft/include
 
-SRCS        := prueba_split.c validation.c utils.c
+SRCS        := pipex.c validation.c parser.c
 
 OBJS        := $(SRCS:%.c=%.o)
 #DEPS        := $(OBJS:.o=.d)
 
 CC          := gcc -g3 -fsanitize=address
-CFLAGS      := -Wall -Wextra -Werror -g3 -fsanitize=address
+CFLAGS      := -Wall -Wextra -Werror
 CPPFLAGS    := $(addprefix -I,$(INCS))
 #-MMD -MP
 LDFLAGS     := $(addprefix -L,$(dir $(LIBS_TARGET)))
@@ -92,4 +92,4 @@ re:
 #------------------------------------------------#
 
 .PHONY: clean fclean re
-.SILENT:
+#.SILENT:
