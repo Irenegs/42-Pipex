@@ -6,7 +6,7 @@
 /*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/30 17:36:54 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/10/29 12:49:38 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/11/12 13:24:50 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,97 +51,54 @@ static int select_variable(char **environ)
     return (-1);
 }
 
-char *get_path(char *s, int i)
+char *get_path(char *s, int i, char **path)
 {
-    char **path;
     char *route;
     char *folder;
 
     if (s && is_local(s) == 0)
         return (s);
     route = NULL;
-    if (s && select_variable(environ) != -1)
+    if (s && path && path[i])
     {
-        path = ft_super_split(environ[select_variable(environ)], "=:");
-        if (!path)
-            return (NULL);
-        if (path[i])
+        folder = ft_strjoin(path[i], "/");
+        if (folder)
         {
-            folder = ft_strjoin(path[i], "/");
-            if (folder)
-            {
-                route = ft_strjoin(folder, s);
-                free(folder);
-            }
+            route = ft_strjoin(folder, s);
+            free(folder);
         }
-        ft_out(path, 100);
     }
     return (route);
 }
 
-int command_exists(char *s)
+char *command_exists(char *s)
 {
     char *route;
     int i;
+    char **path;
 
     if (s)
     {
-        if (is_local(s) == 0)// && access(s, F_OK) == 0 && access(s, X_OK) == 0)
-            return (0);
+        if (is_local(s) == 0)
+            return (s);
         i = 1;
-        route = get_path(s, i);
+        if (select_variable(environ) == -1)
+            path = ft_super_split("/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin", "=:");
+        else
+            path = ft_super_split(environ[select_variable(environ)], "=:");
+        route = get_path(s, i, path);
         while (route != NULL)
         {
             if (access(route, F_OK) == 0 && access(route, X_OK) == 0)
             {
-                printf("2\n");
-                free(route);
-                return (i);
+                ft_out(path, 100);
+                return (route);
             }
             free(route);
             i++;
-            route = get_path(s, i);
+            route = get_path(s, i, path);
         }
+        ft_out(path, 100);
     }
-    return (-1);
+    return (NULL);
 }
-/*
-static int validation_files(int argc, char **argv)
-{
-    if (argc == 5)
-    {
-        if (access(argv[1], R_OK) == 0)
-        {
-            if (access(argv[4], F_OK) != 0 || access(argv[4], W_OK) == 0)
-                return (0);
-        }
-    }
-    return (1);
-}
-*/
-/*
-int validation(int argc, char **argv)
-{
-    char **c1;
-    char **c2;
-
-    if (argc == 5 && validation_files(argc, argv) == 0)
-    {
-        c1 = ft_split(argv[2], ' ');
-        if (c1 && command_exists(c1[0]) != -1)
-        {
-            c2 = ft_split(argv[3], ' ');
-            if (c2 && command_exists(c2[0]) != -1)
-            {
-                ft_out(c1, 100);
-                ft_out(c2, 100);
-                return (0);
-            }
-            ft_out(c2, 100);
-        }
-        ft_out(c1, 100);
-    }
-    perror(NULL);
-    return (1);
-}
-*/

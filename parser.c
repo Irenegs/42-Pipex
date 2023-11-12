@@ -6,7 +6,7 @@
 /*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 15:23:01 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/10/29 12:38:12 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/11/11 10:59:31 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 char	**ft_out(char **arr, int i)
 {
 	int	j;
-    printf("ft out: %d\n", i);
+
 	j = 0;
 	while (j <= i && arr[j])
 	{
