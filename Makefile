@@ -32,7 +32,7 @@ SRCS        := pipex.c validation.c parser.c split_utils.c functions.c
 OBJS        := $(SRCS:%.c=%.o)
 #DEPS        := $(OBJS:.o=.d)
 
-CC          := gcc
+CC          := gcc -g3 -fsanitize=address
 CFLAGS      := -Wall -Wextra -Werror
 CPPFLAGS    := $(addprefix -I,$(INCS))
 #-MMD -MP
