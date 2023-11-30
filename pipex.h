@@ -6,7 +6,7 @@
 /*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/29 18:53:11 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/11/12 13:24:24 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/11/30 21:56:27 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,19 @@
 # include <string.h>
 # include <sys/wait.h>
 # include <limits.h>
+# include <sys/wait.h>
+# include <sys/types.h>
+# include <errno.h>
 
-extern char **environ;
-
-char *command_exists(char *s);
-char    *get_path(char *s, int i, char **path);
+extern char	**environ;
+char	*command_exists(char *s);
 char	**ft_super_split(char const *s, char *sep);
 char	**ft_out(char **arr, int i);
+int		write_error(int error);
+char	**ft_out(char **arr, int i);
+int		is_separator(char c, char *sep);
+int		is_escaped(char const *s, int i);
+int		new_word(char const *s, char *sep, int i, int quotes);
+int		ft_wc(char const *s, char *sep);
+int		end_word(char const *s, char *sep, int i, int quot);
 #endif

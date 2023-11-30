@@ -6,157 +6,73 @@
 /*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 15:23:01 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/11/11 10:59:31 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/11/30 21:48:54 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "pipex.h"
+#include "pipex.h"
 
-char	**ft_out(char **arr, int i)
+static int	ch_to_print(char const *s, int i)
 {
-	int	j;
-
-	j = 0;
-	while (j <= i && arr[j])
+	if (s[i] == '\\' || s[i] == '\'')
 	{
-		free(arr[j]);
-		j++;
+		if (is_escaped(s, i) == 0)
+			return (0);
 	}
-	free(arr);
-	return (NULL);
+	return (1);
 }
 
-static int is_separator(char c, char *sep)
+static int	len_next_word(char const *s, char *sep, int pos)
 {
-    int i;
-
-    if (sep)
-    {
-        i = 0;
-        while (c != sep[i] && sep[i] != '\0')
-            i++;
-        if (sep[i] != '\0')
-            return (i);
-    }
-    return (-1);
-}
-
-static int is_escaped(char const *s, int i)
-{
-    if (s[i - 1] == '\\')
-        return (1);
-    return (0);
-}
-
-static int  new_word(char const *s, char *sep, int i, int quotes)
-{
-    if (s && sep)
-    {
-        if (is_separator(s[i], sep) == -1 && quotes == 0)
-        {
-            if (i == 0)
-                return (1);
-            if (is_separator(s[i - 1], sep) != -1 && is_escaped(s, i - 1) == 0)
-                return (1);
-        }
-        return (0);
-    }
-    return (1);
-}
-
-int	ft_wc(char const *s, char *sep)
-{
+	int	len;
 	int	i;
-	int	words;
-    int quotes;
+	int	quotes;
 
-	if (!s)
-		return (0);
 	i = 0;
-	words = 0;
-    quotes = 0;
-	while (s[i] != '\0')
+	len = 0;
+	quotes = 0;
+	while (end_word(s, sep, pos + i, quotes) == 0)
 	{
-		if (new_word(s, sep, i, quotes) == 1)
-        	words += 1;
-        if (s[i] == '\'' && is_escaped(s, i) == 0)
-            quotes = 1 - quotes;
+		if (ch_to_print(s, pos + i) == 1)
+			len++;
+		else if (s[pos + i] == '\'')
+			quotes = 1 - quotes;
 		i++;
 	}
-	return (words);
+	return (len);
 }
 
-int end_word(char const *s, char *sep, int i, int quotes)
+static int	copy_return_nonprint(char *dst, char const *s, int len)
 {
-    if (s && sep && s[i] != '\0')
-    {
-        if (quotes == 1 || is_separator(s[i], sep) == -1 || is_escaped(s, i) == 1)
-            return (0);
-    }
-    return (1);
-}
+	int	i;
+	int	nonprintable;
 
-int ch_to_print(char const *s, int i)
-{
-    if (s[i] == '\\' || s[i] == '\'')
-    {
-        if (is_escaped(s, i) == 0)
-            return (0);
-    }
-    return (1);
-}
-
-int len_next_word(char const *s, char *sep, int pos)
-{
-    int len;
-    int i;
-    int quotes;
-
-    i = 0;
-    len = 0;
-    quotes = 0;
-    while (end_word(s, sep, pos + i, quotes) == 0)
-    {
-        if (ch_to_print(s, pos + i) == 1)
-            len++;
-        else if (s[pos + i] == '\'')
-            quotes = 1 - quotes;
-        i++;
-    }
-    return(len);
-}
-
-int copy_return_nonprint(char *dst, char const *s, int len)
-{
-    int i;
-    int nonprintable;
-
-    i = 0;
-    nonprintable = 0;
-    if (dst && s)
-    {
-        while (i < len)
-        {
-            if (ch_to_print(s, i + nonprintable) == 1)
-            {
-                dst[i] = s[i + nonprintable];
-                i++;
-            }
-            else
-                nonprintable++;
-        }
-        dst[len] = '\0';
-        return (nonprintable);
-    }
-    return (-1);
+	i = 0;
+	nonprintable = 0;
+	if (dst && s)
+	{
+		while (i < len)
+		{
+			if (ch_to_print(s, i + nonprintable) == 1)
+			{
+				dst[i] = s[i + nonprintable];
+				i++;
+			}
+			else
+				nonprintable++;
+		}
+		dst[len] = '\0';
+		return (nonprintable);
+	}
+	return (-1);
 }
 
 char	**ft_super_split(char const *s, char *sep)
 {
 	char	**arr;
 	int		i;
-	int	pos;
-	int	len;
+	int		pos;
+	int		len;
 
 	arr = malloc((ft_wc(s, sep) + 1) * sizeof(char *));
 	if (!arr)
@@ -165,15 +81,14 @@ char	**ft_super_split(char const *s, char *sep)
 	pos = 0;
 	while (++i < ft_wc(s, sep))
 	{
-        while (new_word(s, sep, pos, 0) == 0)
-    		pos++;
-        len = len_next_word(s, sep, pos);
-    	arr[i] = malloc((len + 1) * sizeof(char));
+		while (new_word(s, sep, pos, 0) == 0)
+			pos++;
+		len = len_next_word(s, sep, pos);
+		arr[i] = malloc((len + 1) * sizeof(char));
 		if (!arr[i])
 			return (ft_out(arr, i));
-    	pos = pos + len + copy_return_nonprint(arr[i], s + pos, len) + 1;
-    }
+		pos = pos + len + copy_return_nonprint(arr[i], s + pos, len) + 1;
+	}
 	arr[i] = NULL;
-    return (arr);
+	return (arr);
 }
-

@@ -27,12 +27,12 @@ LIBS_TARGET := libft/libft.a
 INCS        := include    \
     libft/include
 
-SRCS        := pipex.c validation.c parser.c
+SRCS        := pipex.c validation.c parser.c split_utils.c functions.c
 
 OBJS        := $(SRCS:%.c=%.o)
 #DEPS        := $(OBJS:.o=.d)
 
-CC          := gcc -g3 -fsanitize=address
+CC          := gcc
 CFLAGS      := -Wall -Wextra -Werror
 CPPFLAGS    := $(addprefix -I,$(INCS))
 #-MMD -MP
