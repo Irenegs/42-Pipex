@@ -1,15 +1,27 @@
 # include "pipex.h"
+/*
+int main(void)
+{
+    printf("'%d\n", '\'');
+    printf("\"%d\n", '"');
+    printf("compare %d\n", '\'' == '"');
+    printf("compare %d\n", 2 == 3);
+}
+*/
+
 
 int main(int argc, char **argv, char **envp)
 {
-    char *s = envp[2];
-    if (argc > 1)
-        s = argv[1];
-    char **list = ft_super_split(s, ":=");
+    char **arg;
     int i = 0;
-    while (list[i])
+    if (argc != 1)
     {
-        printf("i %d: [%s]\n",i, list[i]);
-        i++;
+        printf("s: %d, %s\n", argc, argv[1]);
+        arg = envp;//ft_super_split(argv[1], " ");
+        while (arg[i])
+        {
+            printf("%d:%s\n", i, arg[i]);
+            i++;
+        }
     }
 }
