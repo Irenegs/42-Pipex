@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
+/*   By: irgonzal <irgonzal@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 19:20:34 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/11/30 21:51:31 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/12/04 23:20:21 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,13 @@ static int	run_command(char **argv, int i)
 		return (-1);
 	cmd = command_exists(command[0]);
 	if (!cmd)
+	{
+		ft_out(command);
 		return (127);
-	return (execve(cmd, command, environ));
+	}
+	execve(cmd, command, environ);
+	ft_out(command);
+	return (-1);
 }
 
 static void	manage_pipe(int part, int fd_0, int fd_1, int aux_fd)
@@ -78,19 +83,19 @@ static int	child_proccess(char **argv)
 		return (-1);
 	if (childpid == 0)
 	{
-		aux_fd = open(argv[4], O_WRONLY | O_TRUNC | O_CREAT, 0644);
-		if (aux_fd < 0)
-			return (-2);
-		manage_pipe(2, fd[0], fd[1], aux_fd);
-		return (run_command(argv, 2));
-	}
-	else
-	{
 		aux_fd = open(argv[1], O_RDONLY);
 		if (aux_fd < 0)
 			return (-1);
 		manage_pipe(1, fd[0], fd[1], aux_fd);
 		return (run_command(argv, 1));
+	}
+	else if (waitpid(-1, &childpid, WIFEXITED(childpid)) != -1)
+	{
+		aux_fd = open(argv[4], O_WRONLY | O_TRUNC | O_CREAT, 0644);
+		if (aux_fd < 0)
+			return (-2);
+		manage_pipe(2, fd[0], fd[1], aux_fd);
+		return (run_command(argv, 2));
 	}
 	return (-1);
 }
@@ -111,10 +116,7 @@ int	main(int argc, char **argv)
 		if (childexit != 0)
 			write_error(childexit);
 	}
-	if (waitpid(-1, &childpid, WIFEXITED(childpid)) != -1)
-	{
-		if (WIFSIGNALED(childpid) == 1)
-			exiting(WTERMSIG(childpid), argv);
-		exit(0);
-	}
+	else if (waitpid(-1, &childpid, 0) != -1)
+		exiting(WEXITSTATUS(childpid), argv);
+	printf("Adios\n");
 }

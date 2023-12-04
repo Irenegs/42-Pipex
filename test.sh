@@ -84,10 +84,24 @@ if [[ $PIPERRNO -eq $BASHERRNO ]];
 	else echo -e "${RED}ERROR CODE $PIPERRNO != $BASHERRNO${NC}"
 fi
 
+echo -e "\n" $T "TEST: ls -h | sleep 4" && T=$((T+1))
+./pipex input.txt "ls -h" "sleep 4" outPipex.txt
+PIPERRNO=$?
+< input.txt ls -h | sleep 4 > outBash.txt
+BASHERRNO=$?
+if [[ $(diff outPipex.txt outBash.txt | wc -l) -eq 0 ]];
+	then echo -e "${GR}OK${NC}";
+	else echo -e "${RED}KO${NC}"
+fi
+if [[ $PIPERRNO -eq $BASHERRNO ]];
+	then echo -e "${GR}ERROR CODE${NC}";
+	else echo -e "${RED}ERROR CODE $PIPERRNO != $BASHERRNO${NC}"
+fi
+
 echo -e '#! /bin/bash \n\n sleep 4 && echo "hola"' > sleep_echo.sh
 chmod +x sleep_echo.sh
 echo -e "\n" $T "TEST: sleep + echo | cat " && T=$((T+1))
-./pipex input.txt "./sleep_echo.sh" "cat" outPipex.txt
+./pipex input.txt ./sleep_echo.sh cat outPipex.txt
 PIPERRNO=$?
 < input.txt ./sleep_echo.sh | cat > outBash.txt
 BASHERRNO=$?
@@ -100,6 +114,19 @@ if [[ $PIPERRNO -eq $BASHERRNO ]];
 	else echo -e "${RED}ERROR CODE $PIPERRNO != $BASHERRNO${NC}"
 fi
 
+echo -e "\n" $T "TEST: ls | sleep + echo" && T=$((T+1))
+./pipex input.txt ls ./sleep_echo.sh outPipex.txt
+PIPERRNO=$?
+< input.txt ls | ./sleep_echo.sh > outBash.txt
+BASHERRNO=$?
+if [[ $(diff outPipex.txt outBash.txt | wc -l) -eq 0 ]];
+	then echo -e "${GR}OK${NC}";
+	else echo -e "${RED}KO${NC}"
+fi
+if [[ $PIPERRNO -eq $BASHERRNO ]];
+	then echo -e "${GR}ERROR CODE${NC}";
+	else echo -e "${RED}ERROR CODE $PIPERRNO != $BASHERRNO${NC}"
+fi
 
 rm -r sleep_echo.sh
 
@@ -543,9 +570,46 @@ if [[ $PIPERRNO -eq $BASHERRNO ]];
 	else echo -e "${RED}ERROR CODE $PIPERRNO != $BASHERRNO${NC}"
 fi
 
+
 echo "4. Environment"
 
 
+echo -e "\n" $T "TEST: env -i cat | ls " && T=$((T+1))
+env -i ./pipex input.txt cat ls outPipex.txt
+PIPERRNO=$?
+env -i < input.txt cat | ls > outBash.txt
+BASHERRNO=$?
+if [[ $(diff outPipex.txt outBash.txt | wc -l) -eq 0 ]];
+	then echo -e "${GR}OK${NC}";
+	else echo -e "${RED}KO${NC}"
+fi
+if [[ $PIPERRNO -eq $BASHERRNO ]];
+	then echo -e "${GR}ERROR CODE${NC}";
+	else echo -e "${RED}ERROR CODE $PIPERRNO != $BASHERRNO${NC}"
+fi
 
-rm -f outPipex.txt outBash.txt
-#env -i ./pipex outPipex.txt cat "echo $PATH" outBash.txt
+
+echo -e "\n" $T "TEST: unset PATH cat | ls " && T=$((T+1))
+#PATH_COPY=$PATH
+#unset PATH
+bash -c "
+	RED='\033[0;31m'
+	GR='\033[0;32m'
+	NC='\033[0m'
+	./pipex input.txt cat /usr/bin/ls outPipex.txt
+	PIPERRNO=\$?
+	< input.txt cat | /usr/bin/ls > outBash.txt
+	BASHERRNO=\$?
+	echo $(/usr/bin/diff outPipex.txt outBash.txt | sed '/^\s*\$/d' | /usr/bin/wc -l)
+	if /usr/bin/cmp -s outPipex.txt outBash.txt;
+		then echo -e "\${GR}OK\${NC}";
+		else echo -e "\${RED}KO\${NC}"
+	fi
+	if [[ \$PIPERRNO -eq \$BASHERRNO ]];
+		then echo -e '\${GR}ERROR CODE\${NC}';
+		else echo -e '\${RED}ERROR CODE \$PIPERRNO != \$BASHERRNO\${NC}'
+	fi"
+
+
+#rm -f outPipex.txt outBash.txt input.txt
+

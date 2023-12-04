@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
+/*   By: irgonzal <irgonzal@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 15:23:01 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/11/30 21:48:54 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/12/02 19:38:52 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ char	**ft_super_split(char const *s, char *sep)
 		len = len_next_word(s, sep, pos);
 		arr[i] = malloc((len + 1) * sizeof(char));
 		if (!arr[i])
-			return (ft_out(arr, i));
+			return (ft_out(arr));
 		pos = pos + len + copy_return_nonprint(arr[i], s + pos, len) + 1;
 	}
 	arr[i] = NULL;

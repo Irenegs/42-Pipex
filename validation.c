@@ -3,31 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   validation.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
+/*   By: irgonzal <irgonzal@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/30 17:36:54 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/11/30 21:27:07 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/12/03 10:25:22 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-
-static int	is_local(char *s)
-{
-	int	i;
-
-	i = 0;
-	if (s)
-	{
-		while (s[i] != '\0')
-		{
-			if (s[i] == '/')
-				return (0);
-			i++;
-		}
-	}
-	return (1);
-}
 
 static int	select_variable(char **environ)
 {
@@ -35,6 +18,8 @@ static int	select_variable(char **environ)
 	char	**var;
 
 	i = 0;
+	if (environ[0] == NULL)
+		return (-2);
 	while (environ[i])
 	{
 		var = ft_super_split(environ[i], "=:");
@@ -42,10 +27,10 @@ static int	select_variable(char **environ)
 			return (-1);
 		if (ft_strncmp(var[0], "PATH", 4) == 0)
 		{
-			ft_out(var, 100);
+			ft_out(var);
 			return (i);
 		}
-		ft_out(var, 100);
+		ft_out(var);
 		i++;
 	}
 	return (-1);
@@ -74,38 +59,52 @@ static char	*get_path(char *s, int i, char **path)
 static char	**get_path_variable(char **environ)
 {
 	char	*default_path;
+	int		path_var;
 
+	path_var = select_variable(environ);
 	default_path = "PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin";
-	if (select_variable(environ) == -1)
+	if (path_var == -2)
 		return (ft_super_split(default_path, "=:"));
-	return (ft_super_split(environ[select_variable(environ)], "=:"));
+	if (path_var == -1)
+		return (NULL);
+	return (ft_super_split(environ[path_var], "=:"));
+}
+
+static char	*get_route(char *s, char **path)
+{
+	int		i;
+	char	*route;
+
+	i = 1;
+	route = get_path(s, i, path);
+	while (route != NULL)
+	{
+		if (access(route, F_OK) == 0 && access(route, X_OK) == 0)
+			return (route);
+		free(route);
+		i++;
+		route = get_path(s, i, path);
+	}
+	return (NULL);
 }
 
 char	*command_exists(char *s)
 {
 	char	*route;
-	int		i;
 	char	**path;
 
+	route = NULL;
 	if (s)
 	{
-		if (is_local(s) == 0)
-			return (s);
-		i = 1;
 		path = get_path_variable(environ);
-		route = get_path(s, i, path);
-		while (route != NULL)
+		if (!path || is_local(s) == 0)
 		{
-			if (access(route, F_OK) == 0 && access(route, X_OK) == 0)
-			{
-				ft_out(path, 100);
-				return (route);
-			}
-			free(route);
-			i++;
-			route = get_path(s, i, path);
+			if (path)
+				ft_out(path);
+			return (s);
 		}
-		ft_out(path, 100);
+		route = get_route(s, path);
+		ft_out(path);
 	}
-	return (NULL);
+	return (route);
 }
