@@ -6,7 +6,7 @@
 /*   By: irgonzal <irgonzal@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/29 18:53:11 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/12/03 10:25:46 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/12/10 18:11:50 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,4 +33,5 @@ int		new_word(char const *s, char *sep, int i, int quotes);
 int		ft_wc(char const *s, char *sep);
 int		end_word(char const *s, char *sep, int i, int quot);
 int		is_local(char *s);
+int		select_errorcode(int exit, int part, char **argv);
 #endif

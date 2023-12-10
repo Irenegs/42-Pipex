@@ -6,19 +6,51 @@
 /*   By: irgonzal <irgonzal@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 21:46:33 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/12/04 23:12:25 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/12/10 18:11:32 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
+int	select_errorcode(int exit, int part, char **argv)
+{
+	char	**command;
+	char	*cmd;
+	int		error;
+
+	if (exit == 255 || exit == 0 || exit == 127)
+	{	
+		if (access(argv[part + 2 * (part - 1)], F_OK) != 0 && part != 2)
+			return (2);
+		if (access(argv[part + 2 * (part - 1)], R_OK) != 0)
+			return (13);
+		command = ft_super_split(argv[part + 1], " ");
+		if (!command)
+			return (-1);
+		cmd = command_exists(command[0]);
+		if (access(cmd, F_OK) != 0 && is_local(command[0]) != 0)
+			error = 127;
+		else if (access(cmd, X_OK) != 0)
+			error = 126;
+		else if (access(argv[4], W_OK) != 0)
+			error = 1;
+		else
+			error = 0;
+		if (is_local(command[0]) != 0)
+			free(cmd);
+		ft_out(command);
+		return (error);
+	}
+	return (0);
+}
+
 int	write_error(int error)
 {
 	if (error == 127)
 		ft_putstr_fd("Command not found\n", 2);
-	else
+	else if (error != 0)
 		perror(NULL);
-	exit(error);
+	return (error);
 }
 
 char	**ft_out(char **arr)
