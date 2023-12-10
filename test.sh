@@ -17,7 +17,7 @@ T=1
 
 echo -e "\n\n"
 
-: '
+
 echo "1. INITIAL TESTS"
 
 echo -e "\n\n"
@@ -339,7 +339,7 @@ if [[ $PIPERRNO -eq $BASHERRNO ]];
 	then echo -e "${GR}ERROR CODE${NC}";
 	else echo -e "${RED}ERROR CODE $PIPERRNO != $BASHERRNO${NC}"
 fi
-'
+
 echo -e "\n\n"
 echo "3. ERRORS"
 

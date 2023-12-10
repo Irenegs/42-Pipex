@@ -6,7 +6,7 @@
 /*   By: irgonzal <irgonzal@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 19:20:34 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/12/10 18:11:25 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/12/10 18:29:29 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,7 @@ static int	exiting(int exitcode, int part, char **argv)
 	error = select_errorcode(exitcode, part, argv);
 	printf("error %d: %d from %d\n", part, error, exitcode);
 	write_error(error);
-	if (part == 2 && error == 127)
-		exit(1);
-	else if (part == 2)
+	if (part == 2)
 		exit(error);
 	return (0);
 }
@@ -61,12 +59,25 @@ static void	manage_pipe(int part, int fd_0, int fd_1, int aux_fd)
 	}
 }
 
+int	piping(int part, int fd_0, int fd_1, char **argv)
+{
+	int		aux_fd;
+
+	if (part == 1)
+		aux_fd = open(argv[1], O_RDONLY);
+	else
+		aux_fd = open(argv[4], O_WRONLY | O_TRUNC | O_CREAT, 0644);
+	if (aux_fd < 0)
+			return (-1);
+	manage_pipe(part, fd_0, fd_1, aux_fd);
+	return (run_command(argv, part));
+}
+
 int	main(int argc, char **argv)
 {
 	pid_t	childpid1;
 	pid_t	childpid2;
 	int		fd[2];
-	int		aux_fd;
 
 	if (argc != 5)
 		exit (1);
@@ -77,19 +88,11 @@ int	main(int argc, char **argv)
 		exit(write_error(1));
 	if (childpid1 != 0 && childpid2 == 0)
 	{
-		aux_fd = open(argv[1], O_RDONLY);
-		if (aux_fd < 0)
-			return (-1);
-		manage_pipe(1, fd[0], fd[1], aux_fd);
-		return (run_command(argv, 1));
+		piping(1, fd[0], fd[1], argv);
 	}
 	else if (childpid1 == 0 && childpid2 != 0)
 	{
-		aux_fd = open(argv[4], O_WRONLY | O_TRUNC | O_CREAT, 0644);
-		if (aux_fd < 0)
-			return (-2);
-		manage_pipe(2, fd[0], fd[1], aux_fd);
-		return (run_command(argv, 2));
+		piping(2, fd[0], fd[1], argv);
 	}
 	close (fd[1]);
 	if (waitpid(-1, &childpid1, 0) != -1 && waitpid(-1, &childpid2, 0) != -1)
