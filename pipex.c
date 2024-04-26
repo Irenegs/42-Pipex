@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: irgonzal <irgonzal@student.42madrid.com    +#+  +:+       +#+        */
+/*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 19:20:34 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/12/10 18:29:29 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/12/28 19:35:00 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,16 @@ static int	exiting(int exitcode, int part, char **argv)
 	int	error;
 
 	error = select_errorcode(exitcode, part, argv);
-	printf("error %d: %d from %d\n", part, error, exitcode);
-	write_error(error);
+	if (error == 255)
+		write_error(13);
+	else
+		write_error(error);
 	if (part == 2)
+	{
+		if (error == 255 || error == -1)
+			exit(127);
 		exit(error);
+	}
 	return (0);
 }
 
@@ -59,7 +65,7 @@ static void	manage_pipe(int part, int fd_0, int fd_1, int aux_fd)
 	}
 }
 
-int	piping(int part, int fd_0, int fd_1, char **argv)
+static int	piping(int part, int fd_0, int fd_1, char **argv)
 {
 	int		aux_fd;
 
@@ -68,7 +74,7 @@ int	piping(int part, int fd_0, int fd_1, char **argv)
 	else
 		aux_fd = open(argv[4], O_WRONLY | O_TRUNC | O_CREAT, 0644);
 	if (aux_fd < 0)
-			return (-1);
+		return (-1);
 	manage_pipe(part, fd_0, fd_1, aux_fd);
 	return (run_command(argv, part));
 }
@@ -87,13 +93,9 @@ int	main(int argc, char **argv)
 	if (childpid1 == -1 || childpid2 == -1)
 		exit(write_error(1));
 	if (childpid1 != 0 && childpid2 == 0)
-	{
 		piping(1, fd[0], fd[1], argv);
-	}
 	else if (childpid1 == 0 && childpid2 != 0)
-	{
 		piping(2, fd[0], fd[1], argv);
-	}
 	close (fd[1]);
 	if (waitpid(-1, &childpid1, 0) != -1 && waitpid(-1, &childpid2, 0) != -1)
 	{

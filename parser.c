@@ -3,14 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: irgonzal <irgonzal@student.42madrid.com    +#+  +:+       +#+        */
+/*   By: irgonzal <irgonzal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 15:23:01 by irgonzal          #+#    #+#             */
-/*   Updated: 2023/12/02 19:38:52 by irgonzal         ###   ########.fr       */
+/*   Updated: 2023/12/28 19:50:35 by irgonzal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+
+char	**ft_out(char **arr)
+{
+	int	j;
+
+	j = 0;
+	while (arr[j])
+	{
+		free(arr[j]);
+		j++;
+	}
+	free(arr);
+	return (NULL);
+}
 
 static int	ch_to_print(char const *s, int i)
 {
